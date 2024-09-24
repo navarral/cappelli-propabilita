@@ -124,7 +124,7 @@
         const linearBtn = document.getElementById('linearBtn');
         const resetBtn = document.getElementById('resetBtn');
 
-        function createImageElement(image, index) {
+        function createImageElement(image) {
             const div = document.createElement('div');
             div.className = 'image-container';
             div.innerHTML = `<img src="${image.src}" alt="${image.name}" data-name="${image.name}">`;
@@ -132,13 +132,9 @@
         }
 
         function initializeImages() {
-            const initialColumns = [
-                document.getElementById('initial-1'),
-                document.getElementById('initial-2')
-            ];
-            images.forEach((image, index) => {
-                const columnIndex = index % 2;
-                initialColumns[columnIndex].appendChild(createImageElement(image, index));
+            const initialRow = document.getElementById('initial');
+            images.forEach((image) => {
+                initialRow.appendChild(createImageElement(image));
             });
         }
 
@@ -153,72 +149,60 @@
         }
 
         function classifyRandom() {
-            const initialColumns = document.querySelectorAll('#initial .sub-column');
-            const highColumns = [document.getElementById('high-1'), document.getElementById('high-2')];
-            const lowColumns = [document.getElementById('low-1'), document.getElementById('low-2')];
+            const initialRow = document.getElementById('initial');
+            const highRow = document.getElementById('high');
+            const lowRow = document.getElementById('low');
 
-            initialColumns.forEach(column => {
-                while (column.firstChild) {
-                    const image = column.firstChild;
-                    const targetColumns = Math.random() < 0.5 ? highColumns : lowColumns;
-                    const targetColumn = targetColumns[Math.floor(Math.random() * targetColumns.length)];
-                    targetColumn.appendChild(image);
-                }
-            });
+            while (initialRow.children.length > 1) {
+                const image = initialRow.children[1];
+                const targetRow = Math.random() < 0.5 ? highRow : lowRow;
+                targetRow.appendChild(image);
+            }
             updateScore();
             disableClassificationButtons();
         }
 
         function classifyLinear() {
-            const initialColumns = document.querySelectorAll('#initial .sub-column');
-            const highColumns = [document.getElementById('high-1'), document.getElementById('high-2')];
-            const lowColumns = [document.getElementById('low-1'), document.getElementById('low-2')];
-            let highIndex = 0;
-            let lowIndex = 0;
+            const initialRow = document.getElementById('initial');
+            const highRow = document.getElementById('high');
+            const lowRow = document.getElementById('low');
 
-            initialColumns.forEach(column => {
-                while (column.firstChild) {
-                    const image = column.firstChild;
-                    const allocation = presetAllocation.shift();
-                    if (allocation === 'high') {
-                        highColumns[highIndex].appendChild(image);
-                        highIndex = (highIndex + 1) % 2;
-                    } else {
-                        lowColumns[lowIndex].appendChild(image);
-                        lowIndex = (lowIndex + 1) % 2;
-                    }
+            while (initialRow.children.length > 1) {
+                const image = initialRow.children[1];
+                const allocation = presetAllocation.shift();
+                if (allocation === 'high') {
+                    highRow.appendChild(image);
+                } else {
+                    lowRow.appendChild(image);
                 }
-            });
+            }
             updateScore();
             disableClassificationButtons();
         }
 
         function resetPage() {
-			// Reload the entire page
-			window.location.reload();
-		}
+            window.location.reload();
+        }
 
         function updateScore() {
-            const highColumns = [document.getElementById('high-1'), document.getElementById('high-2')];
-            const lowColumns = [document.getElementById('low-1'), document.getElementById('low-2')];
+            const highRow = document.getElementById('high');
+            const lowRow = document.getElementById('low');
             let correctCount = 0;
             let totalCount = 0;
 
-            function checkColumns(columns, expectedSuffix) {
-                columns.forEach(column => {
-                    const images = column.querySelectorAll('img');
-                    images.forEach(img => {
-                        const name = img.getAttribute('data-name');
-                        if (name.endsWith(expectedSuffix)) {
-                            correctCount++;
-                        }
-                        totalCount++;
-                    });
+            function checkRow(row, expectedSuffix) {
+                const images = row.querySelectorAll('img');
+                images.forEach(img => {
+                    const name = img.getAttribute('data-name');
+                    if (name.endsWith(expectedSuffix)) {
+                        correctCount++;
+                    }
+                    totalCount++;
                 });
             }
 
-            checkColumns(highColumns, '_high.png');
-            checkColumns(lowColumns, '_low.png');
+            checkRow(highRow, '_high.png');
+            checkRow(lowRow, '_low.png');
 
             const score = totalCount === 0 ? 0 : (correctCount / totalCount) * 100;
             document.getElementById('score').textContent = `Score: ${score.toFixed(2)}%`;
