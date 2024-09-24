@@ -12,48 +12,55 @@
             margin: 0 auto;
             padding: 20px;
         }
-        .container {
-            display: flex;
-            justify-content: space-between;
-        }
-        .column {
-            width: 30%;
-        }
-        .sub-columns {
+        .row {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
+            margin-bottom: 20px;
         }
-        .initial .sub-column, .high .sub-column, .low .sub-column {
-            width: 48%;
-        }
-        .image-container {
-            border: 1px solid #ccc;
-            padding: 5px;
+        .row h2 {
+            width: 100%;
             margin-bottom: 10px;
         }
+        .image-container {
+            width: calc(20% - 10px);
+            margin: 0px;
+            box-sizing: border-box;
+        }
+        .high {
+            border: 2px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-color: #fe6100;
+        }
+        .low {
+            border: 2px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-color: #648fff;
+        }
         img {
-            width: 50%;
+            width: 100%;
             height: auto;
             display: block;
-            margin: 0 auto;
         }
         button {
             margin-right: 10px;
             padding: 5px 10px;
             background-color: white;
-	    color: black;
-	    border: 2px solid black;
-	    padding: 10px 20px;
-	    font-size: 16px;
-	    cursor: pointer;
-	    transition: background-color 0.3s ease, color 0.3s ease;
-	    border-radius: 5px;
+            color: black;
+            border: 2px solid black;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-radius: 5px;
         }
         button:hover {
-	    background-color: black;
-	    color: white;
-	}
+            background-color: black;
+            color: white;
+        }
         button:disabled {
             opacity: 0.2;
             cursor: not-allowed;
@@ -66,35 +73,20 @@
 </head>
 <body>
     <h1>Cappelli e probabilità</h1>
-    <!--<h2>gioco per capire il rischio di contrarre malattie</h2> -->
     <div>
         <button id="randomBtn" onclick="classifyRandom()">Random</button>
         <button id="linearBtn" onclick="classifyLinear()">Linear</button>
         <button id="resetBtn" onclick="resetPage()">Reset</button>
         <span id="score">Score: 0%</span>
     </div>
-    <div class="container">
-        <div class="column initial" id="initial">
-            <h2>People</h2>
-            <div class="sub-columns">
-                <div class="sub-column" id="initial-1"></div>
-                <div class="sub-column" id="initial-2"></div>
-            </div>
-        </div>
-        <div class="column high" id="high">
-            <h2>High risk</h2>
-            <div class="sub-columns">
-                <div class="sub-column" id="high-1"></div>
-                <div class="sub-column" id="high-2"></div>
-            </div>
-        </div>
-        <div class="column low" id="low">
-            <h2>Low risk</h2>
-            <div class="sub-columns">
-                <div class="sub-column" id="low-1"></div>
-                <div class="sub-column" id="low-2"></div>
-            </div>
-        </div>
+    <div id="initial" class="row">
+        <h2>People</h2>
+    </div>
+    <div id="high" class="row high" style="color:#fe6100;">
+        <h2>High risk</h2>
+    </div>
+    <div id="low" class="row low" style="color:#648fff;">
+        <h2>Low risk</h2>
     </div>
 
     <script>
