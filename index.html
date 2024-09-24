@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    
+    <title>Image Classification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            width: 30%;
+        }
+        .sub-columns {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .initial .sub-column {
+            width: 23%;
+        }
+        .high .sub-column, .low .sub-column {
+            width: 48%;
+        }
+        .image-container {
+            border: 1px solid #ccc;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        img {
+            width: 50%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #score {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cappelli e probabilità</h1>
+    <!--<h2>gioco per capire il rischio di contrarre malattie</h2> -->
+    <div>
+        <button id="randomBtn" onclick="classifyRandom()">Random</button>
+        <button id="linearBtn" onclick="classifyLinear()">Linear</button>
+        <button id="resetBtn" onclick="resetPage()">Reset</button>
+        <span id="score">Score: 0%</span>
+    </div>
+    <div class="container">
+        <div class="column initial" id="initial">
+            <h2>People</h2>
+            <div class="sub-columns">
+                <div class="sub-column" id="initial-1"></div>
+                <div class="sub-column" id="initial-2"></div>
+                <div class="sub-column" id="initial-3"></div>
+                <div class="sub-column" id="initial-4"></div>
+            </div>
+        </div>
+        <div class="column high" id="high">
+            <h2>High risk</h2>
+            <div class="sub-columns">
+                <div class="sub-column" id="high-1"></div>
+                <div class="sub-column" id="high-2"></div>
+            </div>
+        </div>
+        <div class="column low" id="low">
+            <h2>Low risk</h2>
+            <div class="sub-columns">
+                <div class="sub-column" id="low-1"></div>
+                <div class="sub-column" id="low-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const images = [
+            { src: 'assets/face1_high.png', name: 'face1_high.png' },
+            { src: 'assets/face2_low.png', name: 'face2_low.png' },
+            { src: 'assets/face3_high.png', name: 'face3_high.png' },
+            { src: 'assets/face4_high.png', name: 'face4_high.png' },
+            { src: 'assets/face5_high.png', name: 'face5_high.png' },
+            { src: 'assets/face6_high.png', name: 'face6_high.png' },
+            { src: 'assets/face7_high.png', name: 'face7_high.png' },
+            { src: 'assets/face8_low.png', name: 'face8_low.png' },
+            { src: 'assets/face9_high.png', name: 'face9_high.png' },
+            { src: 'assets/face10_high.png', name: 'face10_high.png' },
+            { src: 'assets/face11_high.png', name: 'face11_high.png' },
+            { src: 'assets/face12_high.png', name: 'face12_high.png' },
+            { src: 'assets/face13_low.png', name: 'face13_low.png' },
+            { src: 'assets/face14_high.png', name: 'face14_high.png' },
+            { src: 'assets/face15_high.png', name: 'face15_high.png' },
+            { src: 'assets/face16_high.png', name: 'face16_high.png' },
+            { src: 'assets/face17_low.png', name: 'face17_low.png' },
+            { src: 'assets/face18_low.png', name: 'face18_low.png' },
+            { src: 'assets/face19_high.png', name: 'face19_high.png' },
+            { src: 'assets/face20_high.png', name: 'face20_high.png' }
+        ];
+
+        const presetAllocation = [
+            'high', 'low', 'high', 'low', 'high',
+            'low', 'high', 'low', 'high', 'low',
+            'high', 'high', 'low', 'low', 'high',
+            'high', 'low', 'low', 'high', 'high',
+        ];
+
+        const randomBtn = document.getElementById('randomBtn');
+        const linearBtn = document.getElementById('linearBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        function createImageElement(image, index) {
+            const div = document.createElement('div');
+            div.className = 'image-container';
+            div.innerHTML = `<img src="${image.src}" alt="${image.name}" data-name="${image.name}">`;
+            return div;
+        }
+
+        function initializeImages() {
+            const initialColumns = [
+                document.getElementById('initial-1'),
+                document.getElementById('initial-2'),
+                document.getElementById('initial-3'),
+                document.getElementById('initial-4')
+            ];
+            images.forEach((image, index) => {
+                const columnIndex = index % 4;
+                initialColumns[columnIndex].appendChild(createImageElement(image, index));
+            });
+        }
+
+        function disableClassificationButtons() {
+            randomBtn.disabled = true;
+            linearBtn.disabled = true;
+        }
+
+        function enableClassificationButtons() {
+            randomBtn.disabled = false;
+            linearBtn.disabled = false;
+        }
+
+        function classifyRandom() {
+            const initialColumns = document.querySelectorAll('#initial .sub-column');
+            const highColumns = [document.getElementById('high-1'), document.getElementById('high-2')];
+            const lowColumns = [document.getElementById('low-1'), document.getElementById('low-2')];
+
+            initialColumns.forEach(column => {
+                while (column.firstChild) {
+                    const image = column.firstChild;
+                    const targetColumns = Math.random() < 0.5 ? highColumns : lowColumns;
+                    const targetColumn = targetColumns[Math.floor(Math.random() * targetColumns.length)];
+                    targetColumn.appendChild(image);
+                }
+            });
+            updateScore();
+            disableClassificationButtons();
+        }
+
+        function classifyLinear() {
+            const initialColumns = document.querySelectorAll('#initial .sub-column');
+            const highColumns = [document.getElementById('high-1'), document.getElementById('high-2')];
+            const lowColumns = [document.getElementById('low-1'), document.getElementById('low-2')];
+            let highIndex = 0;
+            let lowIndex = 0;
+
+            initialColumns.forEach(column => {
+                while (column.firstChild) {
+                    const image = column.firstChild;
+                    const allocation = presetAllocation.shift();
+                    if (allocation === 'high') {
+                        highColumns[highIndex].appendChild(image);
+                        highIndex = (highIndex + 1) % 2;
+                    } else {
+                        lowColumns[lowIndex].appendChild(image);
+                        lowIndex = (lowIndex + 1) % 2;
+                    }
+                }
+            });
+            updateScore();
+            disableClassificationButtons();
+        }
+
+        function resetPage() {
+			// Reload the entire page
+			window.location.reload();
+		}
+
+        function updateScore() {
+            const highColumns = [document.getElementById('high-1'), document.getElementById('high-2')];
+            const lowColumns = [document.getElementById('low-1'), document.getElementById('low-2')];
+            let correctCount = 0;
+            let totalCount = 0;
+
+            function checkColumns(columns, expectedSuffix) {
+                columns.forEach(column => {
+                    const images = column.querySelectorAll('img');
+                    images.forEach(img => {
+                        const name = img.getAttribute('data-name');
+                        if (name.endsWith(expectedSuffix)) {
+                            correctCount++;
+                        }
+                        totalCount++;
+                    });
+                });
+            }
+
+            checkColumns(highColumns, '_high.png');
+            checkColumns(lowColumns, '_low.png');
+
+            const score = totalCount === 0 ? 0 : (correctCount / totalCount) * 100;
+            document.getElementById('score').textContent = `Score: ${score.toFixed(2)}%`;
+        }
+
+        window.onload = initializeImages;
+    </script>
+</body>
+</html>
