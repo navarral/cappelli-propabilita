@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
     
-    <title>Image Classification</title>
+    <title>Cappelli e probabilità</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,10 +24,7 @@
             flex-wrap: wrap;
             justify-content: space-between;
         }
-        .initial .sub-column {
-            width: 23%;
-        }
-        .high .sub-column, .low .sub-column {
+        .initial .sub-column, .high .sub-column, .low .sub-column {
             width: 48%;
         }
         .image-container {
@@ -71,8 +68,6 @@
             <div class="sub-columns">
                 <div class="sub-column" id="initial-1"></div>
                 <div class="sub-column" id="initial-2"></div>
-                <div class="sub-column" id="initial-3"></div>
-                <div class="sub-column" id="initial-4"></div>
             </div>
         </div>
         <div class="column high" id="high">
@@ -136,12 +131,10 @@
         function initializeImages() {
             const initialColumns = [
                 document.getElementById('initial-1'),
-                document.getElementById('initial-2'),
-                document.getElementById('initial-3'),
-                document.getElementById('initial-4')
+                document.getElementById('initial-2')
             ];
             images.forEach((image, index) => {
-                const columnIndex = index % 4;
+                const columnIndex = index % 2;
                 initialColumns[columnIndex].appendChild(createImageElement(image, index));
             });
         }
