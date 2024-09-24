@@ -73,21 +73,22 @@
 </head>
 <body>
     <h1>Cappelli e probabilità</h1>
-    <h2>Models: </h2>
+    <p>In questo gioco, dobbiamo scoprire chi ha un rischio alto o basso di prendere l'influenza! Usa i bottoni per vedere come i modelli possono aiutare a classificare le persone.</p>
+    <h2>Modelli: </h2>	
     <div>
-        <button id="randomBtn" onclick="classifyRandom()">Random</button>
-        <button id="linearBtn" onclick="classifyLinear()">Statistical</button>
-        <button id="resetBtn" onclick="resetPage()">Reset</button>
-        <span id="score">Score: 0%</span>
+        <button id="randomBtn" onclick="classifyRandom()">Casuale</button>
+        <button id="linearBtn" onclick="classifyLinear()">Statistico</button>
+        <button id="resetBtn" onclick="resetPage()">Ricomincia</button>
+        <span id="score">Punteggio: 0%</span>
     </div>
     <div id="initial" class="row">
-        <h2>People</h2>
+        <h2>Persone</h2>
     </div>
     <div id="high" class="row high" style="color:#fe6100;">
-        <h2>High risk</h2>
+        <h2>Rischio alto</h2>
     </div>
     <div id="low" class="row low" style="color:#648fff;">
-        <h2>Low risk</h2>
+        <h2>Rischio basso</h2>
     </div>
 
     <script>
