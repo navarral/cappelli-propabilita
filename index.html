@@ -68,6 +68,11 @@
             font-weight: bold;
             margin-left: 10px;
         }
+        #explanation {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -80,6 +85,7 @@
         <button id="resetBtn" onclick="resetPage()">Ricomincia</button>
         <p></p>
         <span id="score">Punteggio: 0%</span>
+        <p id="explanation"></p>
     </div>
     <div id="initial" class="row">
         <h2>Persone</h2>
@@ -125,6 +131,7 @@
         const randomBtn = document.getElementById('randomBtn');
         const linearBtn = document.getElementById('linearBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const explanationElement = document.getElementById('explanation');
 
         function createImageElement(image) {
             const div = document.createElement('div');
@@ -162,6 +169,7 @@
             }
             updateScore();
             disableClassificationButtons();
+            explanationElement.textContent = "Il computer ha scelto le persone a caso, senza usare informazioni che aiutano a fare previsioni giuste. Per questo, il punteggio sarà di solito più basso rispetto a un modello statistico.";
         }
 
         function classifyLinear() {
@@ -180,6 +188,7 @@
             }
             updateScore();
             disableClassificationButtons();
+            explanationElement.textContent = "Il computer ha usato un modello statistico per classificare le persone, basandosi su dati utili. Questo dovrebbe portare a un punteggio più alto perché fa previsioni più accurate.";
         }
 
         function resetPage() {
@@ -207,7 +216,7 @@
             checkRow(lowRow, '_low.png');
 
             const score = totalCount === 0 ? 0 : (correctCount / totalCount) * 100;
-            document.getElementById('score').textContent = `Score: ${score.toFixed(2)}%`;
+            document.getElementById('score').textContent = `Punteggio: ${score.toFixed(2)}%`;
         }
 
         window.onload = initializeImages;
